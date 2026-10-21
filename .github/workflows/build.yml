@@ -1,0 +1,25 @@
+name: Build Deep Panel
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    - name: Unzip Project
+      run: unzip DeepPanel.zip
+    - name: Build with Gradle
+      run: |
+        cd DeepPanel || cd .
+        chmod +x gradlew || true
+        gradle wrapper --gradle-version 8.1.0
+        ./gradlew assembleRelease
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: native-libs
+        path: app/build/intermediates/merged_native_libs/release/out/lib/
